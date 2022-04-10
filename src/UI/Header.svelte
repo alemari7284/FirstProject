@@ -1,7 +1,3 @@
-<script>
-
-</script>
-
 <style>
   header {
     position: fixed;
@@ -18,7 +14,7 @@
 
   h1 {
     color: white;
-    font-family: 'Roboto Slab', serif;
+    font-family: "Roboto Slab", serif;
     margin: 0;
   }
 </style>

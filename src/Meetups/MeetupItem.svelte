@@ -1,42 +1,47 @@
 <script>
-  import Button from "../UI/Button.svelte";
   import { createEventDispatcher } from "svelte";
+  import Button from "../UI/Button.svelte";
+  import Badge from "../UI/Badge.svelte";
 
-  export let id,
-    image,
-    title,
-    subtitle,
-    description,
-    address,
-    contactEmail,
-    isFav;
+  export let id;
+  export let title;
+  export let subtitle;
+  export let imageUrl;
+  export let description;
+  export let address;
+  export let email;
+  export let isFav;
 
   const dispatch = createEventDispatcher();
 </script>
 
 <article>
   <header>
-    <h1>{title}</h1>
+    <h1>
+      {title}
+      {#if isFav}
+        <Badge>FAVORITE</Badge>
+      {/if}
+    </h1>
     <h2>{subtitle}</h2>
     <p>{address}</p>
   </header>
   <div class="image">
-    <img width="300px" height="200px" src={image} alt={title} />
+    <img src={imageUrl} alt={title} />
   </div>
   <div class="content">
     <p>{description}</p>
   </div>
   <footer>
-    <Button href="mailto:{contactEmail}" on:click={dispatch("togglefavorite")}
-      >Contact</Button
-    >
-    <Button caption="Show details" type="button" />
+    <Button href="mailto:{email}">Contact</Button>
     <Button
       mode="outline"
-      caption={isFav ? "Unfavorite" : "Favorite"}
+      color={isFav ? null : "success"}
       type="button"
       on:click={() => dispatch("togglefavorite", id)}
-    />
+      >{isFav ? "Unfavorite" : "Favorite"}</Button
+    >
+    <Button type="button">Show details</Button>
   </footer>
 </article>
 
@@ -54,17 +59,14 @@
     padding: 1rem;
   }
 
-  header {
-    margin-top: 70px;
+  .image {
+    width: 100%;
+    height: 14rem;
   }
 
-  .image {
-    /* width: 100%; */
-    /* height: 14rem; */
-  }
   .image img {
-    /* width: 100%; */
-    /* height: 100%; */
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 
@@ -93,6 +95,10 @@
   }
 
   div {
-    /* text-align: right; */
+    text-align: right;
+  }
+
+  .content {
+    height: 4rem;
   }
 </style>

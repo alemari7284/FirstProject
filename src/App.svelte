@@ -3,13 +3,7 @@
   import MeetupGrid from "./Meetups/MeetupGrid.svelte";
   import TextInput from "./UI/TextInput.svelte";
   import Button from "./UI/Button.svelte";
-
-  export let title = "";
-  export let subtitle = "";
-  export let address = "";
-  export let email = "";
-  export let description = "";
-  export let imageUrl = "";
+  import EditMeetup from "./Meetups/EditMeetup.svelte";
 
   let meetups = [
     {
@@ -17,115 +11,81 @@
       title: "Coding Bootcamp",
       subtitle: "Learn to code in 2 hours",
       description:
-        "In this meetup, we will have some experts that will teach you to code!",
+        "In this meetup, we will have some experts that teach you how to code!",
       imageUrl:
-        "https://www.sapere.it/.imaging/mte/sapere/624x410/dam/icone-sapere/approfondimenti/sapermangiare/caffe-dieta/jcr:content/caffe-dieta.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Caffe_Nero_coffee_bar%2C_High_St%2C_Sutton%2C_Surrey%2C_Greater_London.JPG/800px-Caffe_Nero_coffee_bar%2C_High_St%2C_Sutton%2C_Surrey%2C_Greater_London.JPG",
       address: "27th Nerd Road, 32523 New York",
       contactEmail: "code@test.com",
       isFavorite: false,
     },
     {
       id: "m2",
-      title: "Something else",
-      subtitle: "We'll figure something out",
-      description: "It's just a description",
+      title: "Swim Together",
+      subtitle: "Let's go for some swimming",
+      description: "We will simply swim some rounds!",
       imageUrl:
-        "https://www.coind.it/wp-content/uploads/2017/08/caff%C3%A8.png",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Olympic_swimming_pool_%28Tbilisi%29.jpg/800px-Olympic_swimming_pool_%28Tbilisi%29.jpg",
       address: "27th Nerd Road, 32523 New York",
-      contactEmail: "dontcode@test.com",
+      contactEmail: "swim@test.com",
       isFavorite: false,
     },
   ];
 
-  function addMeetup() {
+  let editMode = null;
+
+  function addMeetup(event) {
     const newMeetup = {
       id: Math.random().toString(),
-      title,
-      subtitle,
-      description,
-      imageUrl,
-      contactEmail: email,
-      address,
+      title: event.detail.title,
+      subtitle: event.detail.subtitle,
+      description: event.detail.description,
+      imageUrl: event.detail.imageUrl,
+      contactEmail: event.detail.email,
+      address: event.detail.address,
     };
 
-    const toggleFavorite = (event) => {
-      const id = event.detail;
-      const updatedMeetup = { ...meetups.find((m) => m.id === id) };
-      updatedMeetup.isFavorite = !updatedMeetup.isFavorite;
-      const meetupIndex = meetups.findIndex((m) => m.id === id);
-      const updatedMeetups = [...meetups];
-      updatedMeetups[meetupIndex] = updatedMeetup;
-      meetups = [...updatedMeetups];
-    };
-
-    meetups = [...meetups, newMeetup];
+    // meetups.push(newMeetup); // DOES NOT WORK!
+    meetups = [newMeetup, ...meetups];
+    editMode = null;
   }
+
+  function toggleFavorite(event) {
+    const id = event.detail;
+    const updatedMeetup = { ...meetups.find((m) => m.id === id) };
+    updatedMeetup.isFavorite = !updatedMeetup.isFavorite;
+    const meetupIndex = meetups.findIndex((m) => m.id === id);
+    const updatedMeetups = [...meetups];
+    updatedMeetups[meetupIndex] = updatedMeetup;
+    meetups = updatedMeetups;
+  }
+
+  const cancelEdit = () => {
+    editMode = null;
+  };
+
+  const closeModal = () => {
+    dispatch("cancel");
+  };
 </script>
 
 <Header />
+
 <main>
-  <form on:submit|preventDefault={addMeetup}>
-    <TextInput
-      id="title"
-      label="Title"
-      value={title}
-      controlType=""
-      type="text"
-      on:input={(event) => (title = event.target.value)}
-    />
-    <TextInput
-      id="subtitle"
-      label="subtitle"
-      value={subtitle}
-      controlType=""
-      type="text"
-      on:input={(event) => (subtitle = event.target.value)}
-    />
-    <TextInput
-      id="address"
-      label="Address"
-      value={address}
-      controlType=""
-      type="text"
-      on:input={(event) => (address = event.target.value)}
-    />
-    <TextInput
-      id="imageUrl"
-      label="Image URL"
-      value={imageUrl}
-      controlType=""
-      type="text"
-      on:input={(event) => (imageUrl = event.target.value)}
-    />
-    <TextInput
-      id="email"
-      label="Email"
-      value={email}
-      controlType=""
-      type="email"
-      on:input={(event) => (email = event.target.value)}
-    />
-    <TextInput
-      id="description"
-      label="Description"
-      value={description}
-      controlType="textarea"
-      rows="3"
-      on:input={(event) => (description = event.target.value)}
-    />
-    <Button type="submit" caption="Save" />
-  </form>
+  <div class="meetup-controls">
+    <Button on:click={() => (editMode = "add")}>New meetup</Button>
+  </div>
+  {#if editMode === "add"}
+    <EditMeetup on:save={addMeetup} on:cancel={cancelEdit} />
+  {/if}
   <MeetupGrid {meetups} on:togglefavorite={toggleFavorite} />
 </main>
 
 <style>
   main {
-    margin-top: 5rem !important;
+    margin-top: 5rem;
   }
 
-  form {
-    width: 30rem;
-    max-width: 90%;
-    margin: auto;
+  .meetup-controls {
+    margin: 1rem;
   }
 </style>
