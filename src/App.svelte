@@ -5,6 +5,7 @@
   import Button from "./UI/Button.svelte";
   import EditMeetup from "./Meetups/EditMeetup.svelte";
 
+  //this is a test
   let meetups = [
     {
       id: "m1",
