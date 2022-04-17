@@ -4,19 +4,16 @@
   import Button from "../UI/Button.svelte";
   import Modal from "../UI/Modal.svelte";
   import { isEmpty } from "../helpers/validation";
+  import { validateEmail } from "../helpers/validation";
 
   let title = "";
-  let titleValid = false;
   let subtitle = "";
   let address = "";
   let email = "";
   let description = "";
   let imageUrl = "";
-  let formIsValid = false;
 
   const dispatch = createEventDispatcher();
-
-  $: titleValid = !isEmpty(title);
 
   const submitForm = () => {
     dispatch("save", {
@@ -39,7 +36,7 @@
     <TextInput
       id="title"
       label="Title"
-      valid={titleValid}
+      valid={!isEmpty(title)}
       validityMessage={"Please enter a valid title."}
       value={title}
       on:input={(event) => (title = event.target.value)}
@@ -74,7 +71,7 @@
       type="email"
       value={email}
       validityMessage={"Please enter a valid email."}
-      valid={!isEmpty(email)}
+      valid={validateEmail(email)}
       on:input={(event) => (email = event.target.value)}
     />
     <TextInput
@@ -83,8 +80,7 @@
       controlType="textarea"
       valid={!isEmpty(description)}
       validityMessage={"Please enter a valid description."}
-      value={description}
-      on:input={(event) => (description = event.target.value)}
+      bind:value={description}
     />
     <Button on:click={cancel} slot="footer" mode="outline">Close</Button>
     <Button type="submit" slot="footer">Save</Button>
